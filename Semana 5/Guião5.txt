@@ -1,0 +1,108 @@
+Problema 5.1:
+
+a) Obtenha uma lista contendo os projetos e funcionários (ssn e nome completo) que
+lá trabalham:
+p Fname, Minit, Lname, Ssn, Pname (employee ? Ssn = Essn works_on? Pno=Pnumber project)
+
+b) Obtenha o nome de todos os funcionários supervisionados por ‘Carlos D Gomes’:
+Carlos = ? SuperSsn (p Ssn (s (Fname='Carlos' and Minit='D' and Lname='Gomes') 
+(employee)))
+
+p Fname, Minit, Lname (Carlos ? (Super_ssn=SuperSsn.Ssn) (employee))
+
+
+
+c) Para cada projeto, listar o seu nome e o número de horas (por semana) gastos nesse
+projeto por todos os funcionários:
+? Pname; Phours<-sum(Hours) (works_on ? (Pno=Pnumber) (project))
+
+
+d) Obter o nome de todos os funcionários do departamento 3 que trabalham mais de
+20 horas por semana no projeto ‘Aveiro Digital’:
+p Fname, Minit, Lname (s (Hours>20) ((s (Dno=3) employee) ? (Essn=Ssn) works_on ?
+(Pno=Pnumber) (s Pname='Aveiro Digital' project)))
+
+
+
+e) Nome dos funcionários que não trabalham para projetos:
+p Fname, Minit, Lname (s Essn=null (employee ? (Essn=Ssn) works_on))
+
+
+
+f) Para cada departamento, listar o seu nome e o salário médio dos seus funcionários
+do sexo feminino;
+? Dname; Avg_Salary<-avg(Salary) ( department ? (Dno=Dnumber) (s Sex='F' employee) )
+
+
+
+g) Obter uma lista de todos os funcionários com mais do que dois dependentes:
+s N_dependent>2 (? Fname, Minit, Lname; N_dependent<-count(Essn) (dependent ? 
+(Essn=Ssn) employee))
+
+
+
+h) Obtenha uma lista de todos os funcionários gestores de departamento que não têm
+dependentes:
+
+
+p Fname, Lname, Dname (department ? (Mgr_ssn=Ssn) (p Fname, Lname, Ssn, Dno (s Essn=null 
+(dependent? (Essn=Ssn) employee))))
+
+
+
+i) Obter os nomes e endereços de todos os funcionários que trabalham em, pelo menos, um 
+projeto localizado em Aveiro mas o seu departamento não tem nenhuma localização em Aveiro.
+
+
+N_proj= p Fname, Minit, Lname, Address, Dno ((employee ? (Essn=Ssn) works_on) ? (Pnumber=Pno) 
+(s Plocation='Aveiro' project))
+
+p Fname, Minit, Lname, Address ((N_proj ? (Dnumber=Dno) department) ? 
+(dept_location.Dnumber=department.Dnumber and Dlocation?'Aveiro') dept_location)
+
+
+
+Problema 5.2
+
+a) Lista dos fornecedores que nunca tiveram encomendas:
+p nome, nif, endereco (s numero=null (fornecedor ? (fornecedor=nif) encomenda))
+
+
+b) Número médio de unidades encomendadas para cada produto:
+
+? nome;avg_unidades<-avg(item.unidades) (item ? (codigo=codProd) produto)
+
+
+c) Número médio de produtos por encomenda; (nota: não interessa o número de
+unidades):
+
+? encomenda.numero; avg_prod<-avg(item.codProd) (item ? (numero=numEnc) encomenda)
+
+
+
+d) Lista de produtos (e quantidades) fornecidas por cada fornecedor:
+t fornecedor.nome (? fornecedor.nome, produto.nome; quant_prod<-sum(item.unidades) (produto? (codProd=codigo) item ? (numero=numEnc) encomenda ? (nif=fornecedor) fornecedor))
+
+Problema 5.3
+
+a) Lista de pacientes que nunca tiveram uma prescrição:
+p paciente.numUtente, paciente.nome, prescricao.numPresc ( s prescricao.numPresc=null (prescricao ? (numUtente=numUtente) paciente))
+
+b) Número de prescrições por especialidade médica:
+? especialidade; count(especialidade) -> num_especialidade (medico ? ? numMedico -> numSNS (prescricao))
+
+
+c) Número de prescrições processadas por farmácia:
+? nome;Prescricoes?count(numPresc) (farmacia?nome=farmacia prescricao)
+
+d) Para a farmacêutica com registo número 906, lista dos seus fármacos nunca
+prescritos:
+p farmaco.numRegFarm,farmaco.nome (s presc_farmaco.numPresc= null (s farmaco.numRegFarm=906 (farmaco ?nome=nomeFarmaco presc_farmaco)))
+
+e) Para cada farmácia, o número de fármacos de cada farmacêutica vendidos:
+p farmacia.nome, numeroDeFarmacos ? farmacia.nome; numeroDeFarmacos?count(farmaco.nome) (farmacia ?farmacia.nome = prescricao.farmacia (prescricao ? prescricao.numPresc=presc_farmaco.numPresc (presc_farmaco ?presc_farmaco.numRegFarm = farmaceutica.numReg (farmaceutica ? numReg = numRegFarm (farmaco)))))
+-- 
+
+
+f) Pacientes que tiveram prescrições de médicos diferentes:
+p nome, prescricoes (p nome, numUtente paciente ? (s prescricoes>1 (? numUtente;prescricoes?count(numUtente) (pnumUtente, numMedico prescricao))))
